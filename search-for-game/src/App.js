@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './Pages/Home/Home';
 import Login from './Pages/Login/Login';
 import Signup from './Pages/Signup/Signup';
@@ -10,11 +10,11 @@ function App() {
     <Router>
       <div className="App">
         <header className="App-header">
-          <Switch>
-            <Route path="/" exact component={Home} />
-            <Route path="/signup" component={Signup} />
-            <Route path="/login" component={Login} />
-          </Switch>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/signup" element={<Signup/>} />
+            <Route path="/login" element={<Login/>} />
+          </Routes>
         </header>
       </div>
     </Router>

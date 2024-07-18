@@ -5,6 +5,7 @@
     align-items: center;
     height: 100vh;
     background-color: #f0f0f0;
+    width:100%;
   }
   
   .home-button {
@@ -18,7 +19,9 @@
     cursor: pointer;
   }
   
+  .home-container h1 {
+    color: black;
+  }
   .home-button:hover {
     background-color: #0056b3;
   }
-  
