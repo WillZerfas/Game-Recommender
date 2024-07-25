@@ -1,16 +1,35 @@
 import React, { useState } from 'react';
 import './Login.css';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState(''); // State to hold messages
+  const navigate = useNavigate(); // Initialize useNavigate
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login logic here
-    console.log('Username:', username);
-    console.log('Password:', password);
-  };
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8801/login', {
+        username: username,
+        password: password,
+      });
+
+      if (response.data === 'Login Successful') {
+        setMessage('Login Successful!');
+        // Redirect to GameHub after successful login
+        navigate('/gamehub');
+      } else {
+        setMessage('Invalid username or password.');
+      }
+    } catch (error) {
+      setMessage('An error occurred during login.');
+      console.log('Error:', error);
+    }
+  }
 
   return (
     <div className="login-container">
@@ -20,23 +39,22 @@ function Login() {
           <label htmlFor="username">Username:</label>
           <input
             type="text"
-            id="username"
-            value={username}
+            placeholder="Enter Username"
             onChange={(e) => setUsername(e.target.value)}
-            required
           />
         </div>
         <div className="form-group">
           <label htmlFor="password">Password:</label>
           <input
             type="password"
-            id="password"
-            value={password}
+            placeholder="Enter Password"
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
         </div>
-        <button type="submit" className="login-button">Login</button>
+        <button type="submit" className="login-button">
+          Login
+        </button>
+        {message && <p className="login-message">{message}</p>} {/* Display message */}
       </form>
     </div>
   );
