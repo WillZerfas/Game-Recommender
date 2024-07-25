@@ -1,18 +1,35 @@
 import React, { useState } from 'react';
 import './Login.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState(''); // State to hold messages
+  const navigate = useNavigate(); // Initialize useNavigate
 
-  function handleSubmit(event){
+
+  async function handleSubmit(event) {
     event.preventDefault();
-    axios.post('http://localhost:8801/login', {username: username, password: password})
-    .then(res=> console.log(res))
-    .catch(err => console.log(err))
-  }
+    try {
+      const response = await axios.post('http://localhost:8801/login', {
+        username: username,
+        password: password,
+      });
 
+      if (response.data === 'Login Successful') {
+        setMessage('Login Successful!');
+        // Redirect to GameHub after successful login
+        navigate('/gamehub');
+      } else {
+        setMessage('Invalid username or password.');
+      }
+    } catch (error) {
+      setMessage('An error occurred during login.');
+      console.log('Error:', error);
+    }
+  }
 
   return (
     <div className="login-container">
@@ -22,7 +39,7 @@ function Login() {
           <label htmlFor="username">Username:</label>
           <input
             type="text"
-            placeholder='Enter Username'
+            placeholder="Enter Username"
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
@@ -30,11 +47,14 @@ function Login() {
           <label htmlFor="password">Password:</label>
           <input
             type="password"
-            placeholder='Enter Password'
+            placeholder="Enter Password"
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button type="submit" className="login-button">Login</button>
+        <button type="submit" className="login-button">
+          Login
+        </button>
+        {message && <p className="login-message">{message}</p>} {/* Display message */}
       </form>
     </div>
   );
