@@ -49,9 +49,31 @@ app.post('/register', (req,res)=> {
     const username = req.body.username;
     const password = req.body.password;
     db.query("INSERT INTO user (email, username, password) values (?, ?, ?)", [email, username, password], (err, result)=> {
-        console.log(err);
+        if (err) {
+            console.error('Error inserting user:', err.message);
+            return res.status(500).json({ message: 'Server error' });
+        }
+        return res.status(200).json({ message: 'Registration successful!' });
     });
 });
+
+app.get('/check-user', (req, res) => {
+    const email = req.query.email; // Use req.query for GET request parameters
+    const username = req.query.username;
+    
+    // Query the database to see if the username or email already exists
+    db.query("SELECT * FROM user WHERE username = ? OR email = ?", [username, email], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: "Error checking username availability: " + err.message }); // Corrected error reference
+        }
+
+        const isAvailable = result.length === 0; // Check if the result set is empty
+        const message = isAvailable ? 'Username and email are available.' : 'Username or email already exists. Please choose another one.';
+
+        return res.status(200).json({ available: isAvailable, message: message });
+    });
+});
+
 
 
 // Login route
