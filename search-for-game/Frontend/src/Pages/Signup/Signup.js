@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Signup.css';
 import Axios from 'axios';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, Link } from 'react-router-dom'; 
 
 function Signup() {
   const [usernameReg, setUsernameReg] = useState('');
@@ -95,6 +95,12 @@ function Signup() {
           {isChecking ? 'Checking...' : 'Sign Up'}
         </button>
         {message && <p className="signup-message">{message}</p>} {/* Display message */}
+        <div>
+          <p style={{ fontSize: '14px', color: 'gray' }}>
+            Already have an account?
+            <Link to="/login"> Login </Link>
+          </p>
+        </div>
       </form>
     </div>
   );
