@@ -47,9 +47,8 @@ function Signup() {
         username: usernameReg,
         password: passwordReg,
       });
-
       setMessage(response.data.message); // Set success message
-      navigate('/');
+      navigate('/gamehub');
     } catch (error) {
       // Handle errors
       if (error.response && error.response.data) {
@@ -94,7 +93,7 @@ function Signup() {
         <button type="submit" className="signup-button" disabled={isChecking}>
           {isChecking ? 'Checking...' : 'Sign Up'}
         </button>
-        {message && <p className="signup-message">{message}</p>} {/* Display message */}
+        {message && <p style={{ fontSize: '14px', color: 'red' }} className="signup-message">{message}</p>} {/* Display message */}
         <div>
           <p style={{ fontSize: '14px', color: 'gray' }}>
             Already have an account?

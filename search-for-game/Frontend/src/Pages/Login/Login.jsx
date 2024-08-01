@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Login.css';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
@@ -54,7 +54,7 @@ function Login() {
         <button type="submit" className="login-button">
           Login
         </button>
-        {message && <p className="login-message">{message}</p>} {/* Display message */}
+        {message && <p style={{ fontSize: '14px', color: 'red' }} className="login-message">{message}</p>} {/* Display message */}
         <div>
           <p style={{ fontSize: '14px', color: 'gray' }}>
             Don't have an account?
