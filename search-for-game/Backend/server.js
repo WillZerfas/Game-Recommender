@@ -44,6 +44,21 @@ app.get('/user', (req, res) => {
     });
 });
 
+// check if user exists in db
+app.get('/check-user', (req, res) => {
+    const { username } = req.query;
+    const sql = 'SELECT COUNT(*) AS count FROM user WHERE username = ?';
+    db.query(sql, [username], (err, result) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        return res.status(500).json({ error: 'Server error' });
+      }
+      const userExists = result[0].count > 0;
+      return res.status(200).json({ exists: userExists });
+    });
+  });
+  
+
 
 // register
 app.post('/register', (req,res)=> {

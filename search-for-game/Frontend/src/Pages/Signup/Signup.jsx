@@ -48,6 +48,7 @@ function Signup() {
         password: passwordReg,
       });
       setMessage(response.data.message); // Set success message
+      sessionStorage.setItem('username', usernameReg)
       navigate('/gamehub');
     } catch (error) {
       // Handle errors

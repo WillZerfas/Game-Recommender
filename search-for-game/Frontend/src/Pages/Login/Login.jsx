@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Login.css';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
@@ -20,6 +20,8 @@ function Login() {
 
       if (response.data === 'Login Successful') {
         setMessage('Login Successful!');
+        // store user info
+        sessionStorage.setItem('username', username)
         // Redirect to GameHub after successful login
         navigate('/gamehub');
       } else {
