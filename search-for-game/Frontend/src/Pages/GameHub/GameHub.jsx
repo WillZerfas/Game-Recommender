@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './GameHub.css';
+import GameCard from '../../components/GameCard';
 
 function GameHub() {
   const navigate = useNavigate();
@@ -20,7 +21,11 @@ function GameHub() {
       </button>
       <h2 className="">Welcome to the GameHub!</h2>
       <p className="">Here you can access all your favorite games.</p>
+      <GameCard>
+      
+    </GameCard>
     </div>
+
   );
 }
 

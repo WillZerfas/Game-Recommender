@@ -44,6 +44,8 @@ app.get('/user', (req, res) => {
     });
 });
 
+
+// register
 app.post('/register', (req,res)=> {
     const email = req.body.email;
     const username = req.body.username;
@@ -75,7 +77,6 @@ app.get('/check-user', (req, res) => {
 });
 
 
-
 // Login route
 app.post('/login', (req, res) => {
     console.log('Request body:', req.body); // Log the request body
@@ -95,6 +96,8 @@ app.post('/login', (req, res) => {
         }
     });
 });
+
+
 
 
 // Start the server
