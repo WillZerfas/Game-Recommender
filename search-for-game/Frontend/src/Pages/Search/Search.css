@@ -1,6 +1,6 @@
-.gamehub-container {
-    padding: 20px;
-    text-align: center;
+.Search-container {
+    padding: 0px;
+    justify-content: center;
   }
   
   .home-button {
@@ -11,7 +11,7 @@
     margin-bottom: -30px;
   }
 
-  .search-button {
+  .topTen-button {
     margin-top: 0px;
   }
   
