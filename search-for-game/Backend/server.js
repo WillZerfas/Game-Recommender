@@ -44,6 +44,24 @@ app.get('/user', (req, res) => {
     });
 });
 
+// check if user exists in db
+/**
+app.get('/check-user', (req, res) => {
+    const { username } = req.query;
+    const sql = 'SELECT COUNT(*) AS count FROM user WHERE username = ?';
+    db.query(sql, [username], (err, result) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        return res.status(500).json({ error: 'Server error' });
+      }
+      const userExists = result[0].count > 0;
+      return res.status(200).json({ exists: userExists });
+    });
+  });
+  */
+
+
+// register
 app.post('/register', (req,res)=> {
     const email = req.body.email;
     const username = req.body.username;
@@ -75,7 +93,6 @@ app.get('/check-user', (req, res) => {
 });
 
 
-
 // Login route
 app.post('/login', (req, res) => {
     console.log('Request body:', req.body); // Log the request body
@@ -95,6 +112,8 @@ app.post('/login', (req, res) => {
         }
     });
 });
+
+
 
 
 app.get('/games/popular', (req, res) => {
