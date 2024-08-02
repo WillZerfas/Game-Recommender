@@ -96,7 +96,7 @@ function Signup() {
         </button>
         {message && <p style={{ fontSize: '14px', color: 'red' }} className="signup-message">{message}</p>} {/* Display message */}
         <div>
-          <p style={{ fontSize: '14px', color: 'gray' }}>
+          <p style={{ fontSize: '14px', color: 'gray'}}>
             Already have an account?
             <Link to="/login"> Login </Link>
           </p>

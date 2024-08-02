@@ -57,7 +57,6 @@ app.get('/check-user', (req, res) => {
       return res.status(200).json({ exists: userExists });
     });
   });
-  
 
 
 // register
@@ -112,6 +111,23 @@ app.post('/login', (req, res) => {
     });
 });
 
+// get games for pagination or infinite scroll view
+app.get('/games', (req, res) => {
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
+    const sql = 'SELECT * FROM games LIMIT ? OFFSET ?';
+  
+    db.query(sql, [limit, offset], (err, results) => {
+      if (err) {
+        console.error('Error fetching games:', err);
+        return res.status(500).json({ error: 'Server error' });
+      }
+      return res.status(200).json(results);
+    });
+  });
+
+
+// get games based on 
 
 
 
