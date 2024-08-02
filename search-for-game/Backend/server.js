@@ -206,6 +206,87 @@ app.get('/games/platforms/:appId', (req, res) => {
 });
 
 
+app.post('/change-username', (req, res) => {
+    const newUsername = req.body.newUsername;
+    const email = req.body.email;
+    const password = req.body.password;
+
+    const checkQuery = `
+      SELECT UID
+      FROM user
+      WHERE email = ? AND password = ?
+    `;
+  
+    db.query(checkQuery, [email, password], (err, result) => {
+      if (err) {
+        console.error('Error checking user:', err);
+        return res.status(500).json({ error: 'Server error' });
+      }
+  
+      if (result.length === 0) {
+        return res.status(404).json({ error: 'No matching account found.' });
+      }
+  
+      const userId = result[0].UID;
+  
+      const updateQuery = `
+        UPDATE user
+        SET username = ?
+        WHERE UID = ?
+      `;
+  
+      db.query(updateQuery, [newUsername, userId], (err) => {
+        if (err) {
+          console.error('Error updating username:', err);
+          return res.status(500).json({ error: 'Server error' });
+        }
+        res.json({ success: true, message: 'Username updated successfully.' });
+      });
+    });
+  });
+
+
+  app.post('/forgot-password', (req, res) => {
+    
+    const username = req.body.username;
+    const email = req.body.email;
+    const newPassword = req.body.newPassword;
+
+    const checkQuery = `
+      SELECT UID
+      FROM user
+      WHERE username = ? AND email = ?
+    `;
+  
+    db.query(checkQuery, [username, email], (err, result) => {
+      if (err) {
+        console.error('Error checking user:', err);
+        return res.status(500).json({ error: 'Server error' });
+      }
+  
+      if (result.length === 0) {
+        return res.status(404).json({ error: 'No matching account found.' });
+      }
+  
+      const userId = result[0].UID;
+
+      const updateQuery = `
+        UPDATE user
+        SET password = ?
+        WHERE UID = ?
+      `;
+  
+      db.query(updateQuery, [newPassword, userId], (err) => {
+        if (err) {
+          console.error('Error updating password:', err);
+          return res.status(500).json({ error: 'Server error' });
+        }
+        res.json({ success: true, message: 'Password updated successfully.' });
+      });
+    });
+  });
+
+
 // Start the server
 app.listen(8801, () => {
     console.log(`Listening...`);
