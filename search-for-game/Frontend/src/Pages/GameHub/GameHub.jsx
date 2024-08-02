@@ -1,59 +1,48 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
 import './GameHub.css';
-import GameCard from '../../components/GameCard';
-import axios from 'axios';
 
 function GameHub() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [games, setGames] = useState([]);
+
+  useEffect(() => {
+    // Fetch the 10 most popular games
+    fetch('http://localhost:8801/games/popular')
+      .then((response) => response.json())
+      .then((data) => setGames(data))
+      .catch((error) => console.error('Error fetching games:', error));
+  }, []);
 
   // Function to handle navigation to home
   const goToHome = () => {
     navigate('/'); // Navigate to Home page
   };
 
-  // get stored username
-  useEffect(() => {
-    const storedUsername = sessionStorage.getItem('username');
-    if (storedUsername) {
-      axios.get(`http://localhost:8801/check-user?username=${storedUsername}`)
-        .then(response => {
-          if (response.data.exists) {
-            setUsername(storedUsername);
-          } else {
-            sessionStorage.removeItem('username');
-            navigate('/login'); // Redirect to login if user does not exist
-          }
-        })
-        .catch(error => {
-          console.error('Error verifying user:', error);
-          navigate('/login'); // Redirect to login on error
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      navigate('/login'); // Redirect to login if username is not found
-      setLoading(false);
-    }
-  }, [navigate]);
-
-  /**
-   * HAVE TO ADD TO .CSS FILE 
-   */
   return (
-    loading ? (<div>Loading...</div>) :
-      (
-        <div className="gamehub-container">
-          <button onClick={goToHome} className="home-button">
-            Back to Home
-          </button>
-          <h2 className="">Welcome to the GameHub!</h2>
-          <p className="">Here you can access all your favorite games.</p>
-        </div>
-      )
+    <div className="gamehub-container">
+      <Button onClick={goToHome} className="home-button" variant="secondary">
+        Back to Home
+      </Button>
+      <h2>Welcome to the GameHub!</h2>
+      <p>Here you can access all your favorite games.</p>
+      <div className="games-grid">
+        {games.map((game) => (
+          <Card key={game.Name} style={{ width: '18rem', margin: '1rem' }}>
+            <Card.Img variant="top" src={game.Image} alt={game.Name} />
+            <Card.Body>
+              <Card.Title>{game.Name}</Card.Title>
+              <Card.Text>
+                Price: ${game.Price}
+              </Card.Text>
+              <Button variant="primary">Expand</Button>
+            </Card.Body>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
 }
 

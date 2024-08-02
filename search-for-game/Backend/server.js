@@ -45,6 +45,7 @@ app.get('/user', (req, res) => {
 });
 
 // check if user exists in db
+/**
 app.get('/check-user', (req, res) => {
     const { username } = req.query;
     const sql = 'SELECT COUNT(*) AS count FROM user WHERE username = ?';
@@ -57,7 +58,7 @@ app.get('/check-user', (req, res) => {
       return res.status(200).json({ exists: userExists });
     });
   });
-  
+  */
 
 
 // register
@@ -114,6 +115,18 @@ app.post('/login', (req, res) => {
 
 
 
+
+app.get('/games/popular', (req, res) => {
+    // Query the database to see if the username or email already exists
+    db.query("SELECT Name, Price, Image FROM game ORDER BY Positive DESC LIMIT 10", (err, result) => {
+        if (err) {
+            console.error('Error executing query:', err);
+            res.status(500).json({ error: 'Failed to fetch games' });
+            return;
+          }
+          res.json(result);
+    });
+});
 
 // Start the server
 app.listen(8801, () => {

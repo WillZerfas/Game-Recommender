@@ -1,0 +1,33 @@
+.gamehub-container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .home-button {
+    margin-bottom: 20px;
+  }
+  
+  .games-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .game-card {
+    margin: 10px;
+  }
+  
+  .game-image {
+    width: 100%;
+    height: auto;
+  }
+  
+  .game-title {
+    font-size: 1.2em;
+    margin: 10px 0;
+  }
+  
+  .game-price {
+    font-size: 1em;
+    color: #555;
+  }
