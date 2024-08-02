@@ -62,6 +62,10 @@ function Login() {
             Don't have an account?
             <Link to="/signup"> Sign Up</Link>
           </p>
+          <p style={{ fontSize: '14px', color: 'gray' }}>
+            Forgot your username or password?
+            <Link to="/forgotCredentials"> Click here</Link> {/* Link to ForgotCredentials */}
+          </p>
         </div>
       </form>
     </div>
