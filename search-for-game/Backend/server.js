@@ -44,24 +44,6 @@ app.get('/user', (req, res) => {
     });
 });
 
-// check if user exists in db
-/**
-app.get('/check-user', (req, res) => {
-    const { username } = req.query;
-    const sql = 'SELECT COUNT(*) AS count FROM user WHERE username = ?';
-    db.query(sql, [username], (err, result) => {
-      if (err) {
-        console.error('Error executing query:', err);
-        return res.status(500).json({ error: 'Server error' });
-      }
-      const userExists = result[0].count > 0;
-      return res.status(200).json({ exists: userExists });
-    });
-  });
-  */
-
-
-
 // register
 app.post('/register', (req,res)=> {
     const email = req.body.email;
@@ -152,6 +134,77 @@ app.get('/games/popular', (req, res) => {
           res.json(result);
     });
 });
+
+
+app.get('/games/details/:appId', (req, res) => {
+    const { appId } = req.params;
+    const gameQuery = `
+        SELECT g.AppId, g.Name, g.ReleaseDate, g.Price, g.Image, g.Description,
+               GROUP_CONCAT(DISTINCT p.Platform) AS Platforms
+        FROM game g
+        LEFT JOIN playedon po ON g.AppId = po.AppId
+        LEFT JOIN platforms p ON po.PlatformID = p.PlatformID
+        WHERE g.AppId = ?
+        GROUP BY g.AppId
+    `;
+
+    db.query(gameQuery, [appId], (err, result) => {
+        if (err) {
+            console.error('Error fetching game details:', err);
+            return res.status(500).json({ error: 'Server error' });
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'Game not found' });
+        }
+        const game = result[0];
+        game.Platforms = game.Platforms.split(','); // Convert comma-separated string to array
+        res.json(game);
+    });
+});
+
+
+
+app.get('/games/developers/:appId', (req, res) => {
+    const { appId } = req.params;
+    const query = `
+        SELECT DISTINCT d.developer, d.website
+        FROM develop de
+        LEFT JOIN developer d ON de.developer = d.developer
+        WHERE de.AppID = ?
+    `;
+
+    db.query(query, [appId], (err, result) => {
+        if (err) {
+            console.error('Error fetching developers:', err);
+            return res.status(500).json({ error: 'Server error' });
+        }
+        res.json(result);
+    });
+});
+
+
+
+app.get('/games/platforms/:appId', (req, res) => {
+    const { appId } = req.params;
+    const platformQuery = `
+        SELECT p.PlatformID, p.Platform, p.Description
+        FROM platforms p
+        JOIN playedon po ON p.PlatformID = po.PlatformID
+        WHERE po.AppID = ?
+    `;
+
+    db.query(platformQuery, [appId], (err, result) => {
+        if (err) {
+            console.error('Error fetching platform descriptions:', err);
+            return res.status(500).json({ error: 'Server error' });
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'No platforms found for this game' });
+        }
+        res.json(result);
+    });
+});
+
 
 // Start the server
 app.listen(8801, () => {
