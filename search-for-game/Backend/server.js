@@ -97,6 +97,18 @@ app.post('/login', (req, res) => {
 });
 
 
+app.get('/games/popular', (req, res) => {
+    // Query the database to see if the username or email already exists
+    db.query("SELECT Name, Price, Image FROM game ORDER BY Positive DESC LIMIT 10", (err, result) => {
+        if (err) {
+            console.error('Error executing query:', err);
+            res.status(500).json({ error: 'Failed to fetch games' });
+            return;
+          }
+          res.json(result);
+    });
+});
+
 // Start the server
 app.listen(8801, () => {
     console.log(`Listening...`);
