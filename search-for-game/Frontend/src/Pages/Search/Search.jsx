@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Row, Col, Pagination, Form, Button, Container } from "react-bootstrap";
+import { Row, Col, Pagination, Form, Button } from "react-bootstrap";
 import './Search.css';
 import GameCard from '../../components/GameCard';
 
@@ -11,11 +11,6 @@ function Search() {
     const [totalPages, setTotalPages] = useState(0);
     const itemsPerPage = 24;
 
-    const [searchText, setSearchText] = useState('');
-    const [genre, setGenre] = useState('');
-    const [category, setCategory] = useState('');
-    const [sortBy, setSortBy] = useState('');
-
     // navigations
     const goToHome = () => {
         sessionStorage.removeItem('username')
@@ -24,11 +19,7 @@ function Search() {
     const goToFavorites = () => navigate('/favorites')
     const goToGameHub = () => navigate('/gamehub')
 
-    useEffect(() => {
-        fetchGames(currPage);
-    }, [currPage]);
-
-    const fetchGames = (page) => {
+    const fetchGames = useCallback((page) => {
         const offset = (page - 1) * itemsPerPage;
         fetch(`http://localhost:8801/games?limit=${itemsPerPage}&offset=${offset}`)
             .then((response) => response.json())
@@ -40,7 +31,11 @@ function Search() {
                 }
             })
             .catch((error) => { console.error('Error fetching games:', error) });
-    };
+    }, [itemsPerPage, totalPages]);
+
+    useEffect(() => {
+        fetchGames(currPage);
+    }, [currPage, fetchGames]);
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber !== currPage) {
@@ -95,84 +90,93 @@ function Search() {
     const handleSearch = (e) => {
         e.preventDefault();
         setCurrPage(1);
+        const formData = new FormData(e.target)
+        const payLoad = Object.fromEntries(formData)
         //todo search for the games
+        console.log(payLoad)
     };
 
     return (
-        <div className="Search-container">
-            <Row>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+        <div className='container'>
+
+            <Row style={{ border: '1px solid red' }}>
+                <Col xs="auto" className="text-left" >
                     <Button onClick={goToHome} className="home-button" variant="secondary">
                         Back to Home
                     </Button>
+                </Col>
+                <Col className="text-center" style={{ border: '1px solid red' }}>
+                    <h2>Welcome to the GameHub!</h2>
+                    <p>Here you can access all your favorite games.</p>
+                </Col>
+                <Col xs="auto" className="text-right" style={{ border: '1px solid red' }}>
                     <Button onClick={goToFavorites} className="favorite-button" variant="secondary">
                         My Favorites
                     </Button>
-                </div>
-            </Row>
-            <Row className="justify-content-center">
-                <h2>Welcome to the GameHub!</h2>
-                <Col xs="auto">
-                    <p>Here you can access all your favorite games.</p>
                 </Col>
-                <Col xs="auto">
-                    <Button onClick={goToGameHub} className="topTen-button" variant="primary">
+            </Row>
+
+            <Row className="justify-content-center" style={{ border: '1px solid red' }}>
+                <Col xs="auto" className="d-flex align-items-center" style={{ border: '1px solid red' }}>
+                    <h3>Search Below</h3>
+                    <Button onClick={goToGameHub} className="topTen-button" variant="primary" style={{ marginLeft: '10px' }}>
                         Top Tens
                     </Button>
                 </Col>
             </Row>
-            <Row><h1>Search Below</h1></Row>
-            <Form onSubmit={handleSearch}>
-                <Row className="mb-3">
-                    <Col>
-                        <Form.Control
-                            type="text"
-                            placeholder="Search by name"
-                            value={searchText}
-                            onChange={(e) => setSearchText(e.target.value)}
-                        />
-                    </Col>
-                    <Col>
-                        <Form.Control
-                            type="text"
-                            placeholder="Genre"
-                            value={genre}
-                            onChange={(e) => setGenre(e.target.value)}
-                        />
-                    </Col>
-                    <Col>
-                        <Form.Control
-                            type="text"
-                            placeholder="Category"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                        />
-                    </Col>
-                    <Col>
-                        <Form.Select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                            <option value="">Sort by...</option>
-                            <option value="releasedate">Release Date</option>
-                            <option value="price">Price</option>
-                            <option value="name">Name</option>
-                            <option value="metascore">Metascore</option>
-                            <option value="positive">Positive Reviews</option>
-                            <option value="negative">Negative Reviews</option>
-                        </Form.Select>
-                    </Col>
-                    <Col>
-                        <Button type="submit" variant="primary">Search</Button>
-                    </Col>
-                </Row>
-            </Form>
-            <Container className="games-grid">
-                <Row>
-                    {games.map((game) => (
-                        <Col key={game.AppId} xs={12} sm={6} md={4} lg={3}>
-                            <GameCard game={game} />
+
+            <Row>
+                <Form onSubmit={handleSearch} style={{ border: '1px solid red' }}>
+                    <Row className="justify-content-center">
+                        <Col md={6} className="d-flex align-items-center">
+                            <Form.Control
+                                name='searchField'
+                                type="text"
+                                placeholder="Search by name"
+                                className="formControl"
+                            />
+                            <Button type="submit" variant="primary">Search</Button>
                         </Col>
+                    </Row>
+                    <Row className="justify-content-center">
+                        <Col xs='auto' className="d-flex align-items-center">
+                            <Form.Control
+                                name="genre"
+                                type="text"
+                                placeholder="Genre"
+                                className="formControl"
+                            />
+                            <Form.Control
+                                name="category"
+                                type="text"
+                                placeholder="Category"
+                                className="formControl"
+                            />
+                            <Form.Select
+                                name="sortBy"
+                                className="formControl"
+                            >
+                                <option value="">Sort by...</option>
+                                <option value="releasedate">Release Date</option>
+                                <option value="price">Price</option>
+                                <option value="name">Name</option>
+                                <option value="metascore">Metascore</option>
+                                <option value="positive">Positive Review Num</option>
+                                <option value="negative">Negative Review Num</option>
+                            </Form.Select>
+                        </Col>
+                    </Row>
+                </Form>
+            </Row>
+
+            <Row style={{ border: '1px solid red' }}>
+                <div className="games-grid">
+                    {games.map((game) => (
+                        <GameCard key={game.AppId} game={game} />
                     ))}
-                </Row>
-            </Container>
+                </div>
+            </Row>
+
             <Row className="justify-content-center">
                 <Col xs="auto">
                     <Pagination>
