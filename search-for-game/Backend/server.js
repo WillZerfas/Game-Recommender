@@ -114,20 +114,27 @@ app.post('/login', (req, res) => {
     });
 });
 
-// get games for pagination or infinite scroll view
+// get all games for pagination or infinite scroll view
 app.get('/games', (req, res) => {
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 24; // Default to 24 items per page
     const offset = parseInt(req.query.offset) || 0;
-    const sql = 'SELECT * FROM games LIMIT ? OFFSET ?';
-  
-    db.query(sql, [limit, offset], (err, results) => {
-      if (err) {
-        console.error('Error fetching games:', err);
-        return res.status(500).json({ error: 'Server error' });
-      }
-      return res.status(200).json(results);
+    const countQuery = 'SELECT COUNT(*) as total FROM game';
+    const gamesQuery = 'SELECT AppId, Name, Price, Image FROM game LIMIT ? OFFSET ?';
+    db.query(countQuery, (err, countResults) => {
+        if (err) {
+            console.error('Error fetching games count:', err);
+            return res.status(500).json({ error: 'Server error' });
+        }
+        const total = countResults[0].total;
+        db.query(gamesQuery, [limit, offset], (err, gameResults) => {
+            if (err) {
+                console.error('Error fetching games:', err);
+                return res.status(500).json({ error: 'Server error' });
+            }
+            return res.status(200).json({ total, games: gameResults });
+        });
     });
-  });
+});
 
 
 // get games based on 
@@ -136,7 +143,7 @@ app.get('/games', (req, res) => {
 
 app.get('/games/popular', (req, res) => {
     // Query the database to see if the username or email already exists
-    db.query("SELECT Name, Price, Image FROM game ORDER BY Positive DESC LIMIT 10", (err, result) => {
+    db.query("SELECT AppId, Name, Price, Image FROM game ORDER BY Positive DESC LIMIT 10", (err, result) => {
         if (err) {
             console.error('Error executing query:', err);
             res.status(500).json({ error: 'Failed to fetch games' });
