@@ -7,6 +7,7 @@ import Signup from './Pages/Signup/Signup';
 import GameHub from './Pages/GameHub/GameHub';
 import Favorites from './Pages/Favorites/Favorites'
 import Search from './Pages/Search/Search';
+import GameDetails from './Pages/GameDetails/GameDetails';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
             <Route path="/gamehub" element={<GameHub />} />
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/gameDetails/:appId" element={<GameDetails />} />
           </Routes>
         </header>
       </div>

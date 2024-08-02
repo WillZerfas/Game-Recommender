@@ -1,0 +1,17 @@
+.game-details-container {
+    margin-top: 20px;
+  }
+  
+  .game-image {
+    width: 100%;
+    height: auto;
+  }
+  
+  .developer-link {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .developer-link:hover {
+    text-decoration: underline;
+  }
