@@ -45,11 +45,11 @@ app.get('/user', (req, res) => {
 });
 
 // register
-app.post('/register', (req,res)=> {
+app.post('/register', (req, res) => {
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
-    db.query("INSERT INTO user (email, username, password) values (?, ?, ?)", [email, username, password], (err, result)=> {
+    db.query("INSERT INTO user (email, username, password) values (?, ?, ?)", [email, username, password], (err, result) => {
         if (err) {
             console.error('Error inserting user:', err.message);
             return res.status(500).json({ message: 'Server error' });
@@ -61,7 +61,7 @@ app.post('/register', (req,res)=> {
 app.get('/check-user', (req, res) => {
     const email = req.query.email; // Use req.query for GET request parameters
     const username = req.query.username;
-    
+
     // Query the database to see if the username or email already exists
     db.query("SELECT * FROM user WHERE username = ? OR email = ?", [username, email], (err, result) => {
         if (err) {
@@ -87,28 +87,96 @@ app.post('/login', (req, res) => {
             return res.json("Error");
         }
         console.log('Query result:', data); // Log the query result
-        
-        if(data.length > 0){
+
+        if (data.length > 0) {
             return res.json("Login Successful");
-        } else{
+        } else {
             return res.json("No record");
         }
     });
 });
 
+
 // get all games for pagination or infinite scroll view
+// app.get('/games', (req, res) => {
+//     const limit = parseInt(req.query.limit) || 24; // Default to 24 items per page
+//     const offset = parseInt(req.query.offset) || 0;
+//     const countQuery = 'SELECT COUNT(*) as total FROM game';
+//     const gamesQuery = 'SELECT AppId, Name, Price, Image FROM game LIMIT ? OFFSET ?';
+//     db.query(countQuery, (err, countResults) => {
+//         if (err) {
+//             console.error('Error fetching games count:', err);
+//             return res.status(500).json({ error: 'Server error' });
+//         }
+//         const total = countResults[0].total;
+//         db.query(gamesQuery, [limit, offset], (err, gameResults) => {
+//             if (err) {
+//                 console.error('Error fetching games:', err);
+//                 return res.status(500).json({ error: 'Server error' });
+//             }
+//             return res.status(200).json({ total, games: gameResults });
+//         });
+//     });
+// });
+
+// Get games based on filter
 app.get('/games', (req, res) => {
+
     const limit = parseInt(req.query.limit) || 24; // Default to 24 items per page
     const offset = parseInt(req.query.offset) || 0;
-    const countQuery = 'SELECT COUNT(*) as total FROM game';
-    const gamesQuery = 'SELECT AppId, Name, Price, Image FROM game LIMIT ? OFFSET ?';
-    db.query(countQuery, (err, countResults) => {
+    const { name = '', genre = '', category = '', sortBy = '', minPrice = 0, maxPrice = 99999999.99 } = req.query;
+
+    let countQuery = 'SELECT COUNT(*) as total FROM game WHERE 1=1';
+    let gamesQuery = 'SELECT AppId, Name, Price, Image FROM game WHERE 1=1';
+    const queryParams = [];
+
+    // Filtering by name
+    if (name) {
+        countQuery += ' AND Name LIKE ?';
+        gamesQuery += ' AND Name LIKE ?';
+        queryParams.push(`%${name}%`);
+    }
+
+    // Filtering by genre
+    if (genre) {
+        countQuery += ' AND Genres Like ?';
+        gamesQuery += ' AND Genres Like ?';
+        queryParams.push(`%${genre}%`);
+    }
+
+    // Filtering by category
+    if (category) {
+        countQuery += ' AND Category Like ?';
+        gamesQuery += ' AND Category Like ?';
+        queryParams.push(`%${category}%`);
+    }
+
+    // Filtering by price range
+    if (minPrice !== 0 && maxPrice !== 99999999.99) {
+        countQuery += ' AND Price >= ? AND Price <= ?';
+        gamesQuery += ' AND Price >= ? AND Price <= ?';
+        queryParams.push(minPrice, maxPrice);
+    }
+
+    if (sortBy) {
+        gamesQuery += ` ORDER BY ${sortBy}`;
+    }
+
+    gamesQuery += ' LIMIT ? OFFSET ?';
+    queryParams.push(limit, offset);
+
+    // Execute count query
+    db.query(countQuery, queryParams.slice(0, -2), (err, countResults) => {
+
+        console.log(`here: ${countQuery}`)
         if (err) {
             console.error('Error fetching games count:', err);
             return res.status(500).json({ error: 'Server error' });
         }
         const total = countResults[0].total;
-        db.query(gamesQuery, [limit, offset], (err, gameResults) => {
+
+        // Execute games query
+        db.query(gamesQuery, queryParams, (err, gameResults) => {
             if (err) {
                 console.error('Error fetching games:', err);
                 return res.status(500).json({ error: 'Server error' });
@@ -119,10 +187,6 @@ app.get('/games', (req, res) => {
 });
 
 
-// get games based on 
-
-
-
 app.get('/games/popular', (req, res) => {
     // Query the database to see if the username or email already exists
     db.query("SELECT AppId, Name, Price, Image FROM game ORDER BY Positive DESC LIMIT 10", (err, result) => {
@@ -130,8 +194,8 @@ app.get('/games/popular', (req, res) => {
             console.error('Error executing query:', err);
             res.status(500).json({ error: 'Failed to fetch games' });
             return;
-          }
-          res.json(result);
+        }
+        res.json(result);
     });
 });
 
@@ -216,38 +280,38 @@ app.post('/change-username', (req, res) => {
       FROM user
       WHERE email = ? AND password = ?
     `;
-  
+
     db.query(checkQuery, [email, password], (err, result) => {
-      if (err) {
-        console.error('Error checking user:', err);
-        return res.status(500).json({ error: 'Server error' });
-      }
-  
-      if (result.length === 0) {
-        return res.status(404).json({ error: 'No matching account found.' });
-      }
-  
-      const userId = result[0].UID;
-  
-      const updateQuery = `
+        if (err) {
+            console.error('Error checking user:', err);
+            return res.status(500).json({ error: 'Server error' });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'No matching account found.' });
+        }
+
+        const userId = result[0].UID;
+
+        const updateQuery = `
         UPDATE user
         SET username = ?
         WHERE UID = ?
       `;
-  
-      db.query(updateQuery, [newUsername, userId], (err) => {
-        if (err) {
-          console.error('Error updating username:', err);
-          return res.status(500).json({ error: 'Server error' });
-        }
-        res.json({ success: true, message: 'Username updated successfully.' });
-      });
+
+        db.query(updateQuery, [newUsername, userId], (err) => {
+            if (err) {
+                console.error('Error updating username:', err);
+                return res.status(500).json({ error: 'Server error' });
+            }
+            res.json({ success: true, message: 'Username updated successfully.' });
+        });
     });
-  });
+});
 
 
-  app.post('/forgot-password', (req, res) => {
-    
+app.post('/forgot-password', (req, res) => {
+
     const username = req.body.username;
     const email = req.body.email;
     const newPassword = req.body.newPassword;
@@ -257,34 +321,34 @@ app.post('/change-username', (req, res) => {
       FROM user
       WHERE username = ? AND email = ?
     `;
-  
-    db.query(checkQuery, [username, email], (err, result) => {
-      if (err) {
-        console.error('Error checking user:', err);
-        return res.status(500).json({ error: 'Server error' });
-      }
-  
-      if (result.length === 0) {
-        return res.status(404).json({ error: 'No matching account found.' });
-      }
-  
-      const userId = result[0].UID;
 
-      const updateQuery = `
+    db.query(checkQuery, [username, email], (err, result) => {
+        if (err) {
+            console.error('Error checking user:', err);
+            return res.status(500).json({ error: 'Server error' });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'No matching account found.' });
+        }
+
+        const userId = result[0].UID;
+
+        const updateQuery = `
         UPDATE user
         SET password = ?
         WHERE UID = ?
       `;
-  
-      db.query(updateQuery, [newPassword, userId], (err) => {
-        if (err) {
-          console.error('Error updating password:', err);
-          return res.status(500).json({ error: 'Server error' });
-        }
-        res.json({ success: true, message: 'Password updated successfully.' });
-      });
+
+        db.query(updateQuery, [newPassword, userId], (err) => {
+            if (err) {
+                console.error('Error updating password:', err);
+                return res.status(500).json({ error: 'Server error' });
+            }
+            res.json({ success: true, message: 'Password updated successfully.' });
+        });
     });
-  });
+});
 
 
 // Start the server

@@ -1,27 +1,40 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Row, Col, Pagination, Form, Button } from "react-bootstrap";
 import './Search.css';
 import GameCard from '../../components/GameCard';
+import { categories, genres, sortBys } from './data';
 
 function Search() {
+
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [currPage, setCurrPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
+    const [searchParams, setSearchParams] = useState(new URLSearchParams());
     const itemsPerPage = 24;
+
+    const searchFormRef = useRef(null);
 
     // navigations
     const goToHome = () => {
         sessionStorage.removeItem('username')
         navigate('/')
     }
+
+
     const goToFavorites = () => navigate('/favorites')
     const goToGameHub = () => navigate('/gamehub')
 
-    const fetchGames = useCallback((page) => {
+
+    const fetchGames = useCallback((params) => {
+        const page = currPage;
         const offset = (page - 1) * itemsPerPage;
-        fetch(`http://localhost:8801/games?limit=${itemsPerPage}&offset=${offset}`)
+
+        params.set('limit', itemsPerPage);
+        params.set('offset', offset);
+
+        fetch(`http://localhost:8801/games?${params.toString()}`)
             .then((response) => response.json())
             .then((data) => {
                 setGames(data.games);
@@ -31,17 +44,45 @@ function Search() {
                 }
             })
             .catch((error) => { console.error('Error fetching games:', error) });
-    }, [itemsPerPage, totalPages]);
+    }, [currPage, itemsPerPage, totalPages]);
+
 
     useEffect(() => {
-        fetchGames(currPage);
-    }, [currPage, fetchGames]);
+        fetchGames(searchParams);
+    }, [currPage, fetchGames, searchParams]);
+
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber !== currPage) {
             setCurrPage(pageNumber);
         }
     };
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target)
+        const payLoad = Object.fromEntries(formData)
+        const newSearchParams = new URLSearchParams();
+
+        const minPrice = parseFloat(payLoad.minPrice) || 0;
+        const maxPrice = parseFloat(payLoad.maxPrice) || Infinity;
+        if (minPrice > maxPrice) {
+            alert('Max price should be greater than or equal to Min price');
+            return;
+        }
+
+        if (payLoad.name) newSearchParams.append('name', payLoad.name);
+        if (payLoad.genre) newSearchParams.append('genre', payLoad.genre);
+        if (payLoad.category) newSearchParams.append('category', payLoad.category);
+        if (payLoad.sortBy) newSearchParams.append('sortBy', payLoad.sortBy);
+        if (payLoad.minPrice) newSearchParams.append('minPrice', payLoad.minPrice);
+        if (payLoad.maxPrice) newSearchParams.append('maxPrice', payLoad.maxPrice);
+
+        setSearchParams(newSearchParams);
+        setCurrPage(1);
+    };
+
 
     const buildPaginator = () => {
         let items = [];
@@ -87,37 +128,34 @@ function Search() {
         return items;
     };
 
-    const handleSearch = (e) => {
-        e.preventDefault();
+    const handleAllClick = () => {
+        setSearchParams(new URLSearchParams());
         setCurrPage(1);
-        const formData = new FormData(e.target)
-        const payLoad = Object.fromEntries(formData)
-        //todo search for the games
-        console.log(payLoad)
-    };
+        searchFormRef.current.reset()
+    }
 
     return (
         <div className='container'>
 
-            <Row style={{ border: '1px solid red' }}>
+            <Row >
                 <Col xs="auto" className="text-left" >
                     <Button onClick={goToHome} className="home-button" variant="secondary">
                         Back to Home
                     </Button>
                 </Col>
-                <Col className="text-center" style={{ border: '1px solid red' }}>
+                <Col className="text-center" >
                     <h2>Welcome to the GameHub!</h2>
                     <p>Here you can access all your favorite games.</p>
                 </Col>
-                <Col xs="auto" className="text-right" style={{ border: '1px solid red' }}>
+                <Col xs="auto" className="text-right" >
                     <Button onClick={goToFavorites} className="favorite-button" variant="secondary">
                         My Favorites
                     </Button>
                 </Col>
             </Row>
 
-            <Row className="justify-content-center" style={{ border: '1px solid red' }}>
-                <Col xs="auto" className="d-flex align-items-center" style={{ border: '1px solid red' }}>
+            <Row className="justify-content-center">
+                <Col xs="auto" className="d-flex align-items-center">
                     <h3>Search Below</h3>
                     <Button onClick={goToGameHub} className="topTen-button" variant="primary" style={{ marginLeft: '10px' }}>
                         Top Tens
@@ -126,50 +164,64 @@ function Search() {
             </Row>
 
             <Row>
-                <Form onSubmit={handleSearch} style={{ border: '1px solid red' }}>
+                <Form ref={searchFormRef} onSubmit={handleSearch}>
                     <Row className="justify-content-center">
                         <Col md={6} className="d-flex align-items-center">
                             <Form.Control
-                                name='searchField'
+                                name='name'
                                 type="text"
                                 placeholder="Search by name"
                                 className="formControl"
                             />
                             <Button type="submit" variant="primary">Search</Button>
+                            <Button onClick={handleAllClick} className="All-Games" variant="primary" style={{ marginLeft: '10px' }}>
+                                All
+                            </Button>
                         </Col>
                     </Row>
                     <Row className="justify-content-center">
                         <Col xs='auto' className="d-flex align-items-center">
                             <Form.Control
-                                name="genre"
-                                type="text"
-                                placeholder="Genre"
+                                name="minPrice"
+                                type="number"
+                                min="0"
+                                placeholder="Min Price"
                                 className="formControl"
                             />
                             <Form.Control
-                                name="category"
-                                type="text"
-                                placeholder="Category"
+                                name="maxPrice"
+                                type="number"
+                                min="0"
+                                placeholder="Max Price"
                                 className="formControl"
                             />
-                            <Form.Select
-                                name="sortBy"
-                                className="formControl"
-                            >
+                            <Form.Select name="genre" className="formControl">
+                                <option value="">Genres...</option>
+                                {genres.map(genre =>
+                                    <option value={genre} key={genre}>{genre}</option>
+                                )}
+                            </Form.Select>
+                            <Form.Select name="category" className="formControl">
+                                <option value="">Categories...</option>
+                                {categories.map(categ =>
+                                    <option value={categ} key={categ}>{categ}</option>
+                                )}
+                            </Form.Select>
+                            <Form.Select name="sortBy" className="formControl">
                                 <option value="">Sort by...</option>
-                                <option value="releasedate">Release Date</option>
-                                <option value="price">Price</option>
-                                <option value="name">Name</option>
-                                <option value="metascore">Metascore</option>
-                                <option value="positive">Positive Review Num</option>
-                                <option value="negative">Negative Review Num</option>
+                                {sortBys.map(op => (
+                                    <React.Fragment key={op}>
+                                        <option value={`${op} ASC`}>{`${op} ↑`}</option>
+                                        <option value={`${op} DESC`}>{`${op} ↓`}</option>
+                                    </React.Fragment>
+                                ))}
                             </Form.Select>
                         </Col>
                     </Row>
                 </Form>
-            </Row>
+            </Row >
 
-            <Row style={{ border: '1px solid red' }}>
+            <Row>
                 <div className="games-grid">
                     {games.map((game) => (
                         <GameCard key={game.AppId} game={game} />
@@ -192,7 +244,7 @@ function Search() {
                     </Pagination>
                 </Col>
             </Row>
-        </div>
+        </div >
     )
 }
 
