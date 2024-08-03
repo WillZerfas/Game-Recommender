@@ -357,6 +357,59 @@ app.post('/forgot-password', (req, res) => {
 });
 
 
+
+app.get('/average-price', (req, res) => {
+    const query = `
+      SELECT AVG(price) AS avg_price
+      FROM game
+    `;
+  
+    db.query(query, (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+      res.json({ avg_price: results[0].avg_price });
+    });
+  });
+
+  
+
+app.get('/games-below-average', (req, res) => {
+    const query = `
+    SELECT COUNT(*) AS games_below_average
+    FROM game
+    WHERE price < (
+      SELECT AVG(price)
+      FROM game
+    )
+  `;
+
+    db.query(query, (error, results) => {
+        if (error) {
+            console.error('Error executing query:', error);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+          }
+          res.json({ games_below_average: results[0].games_below_average });
+        });
+      });
+
+
+
+app.get('/top-ratio', (req, res) => {
+    db.query("SELECT AppId, Name, Price, Image, Positive, Negative, (Positive / NULLIF(Negative, 0)) AS Ratio FROM game WHERE (Positive + Negative) > 10000 ORDER BY Ratio DESC LIMIT 20", (err, result) => {
+        if (err) {
+            console.error('Error executing query:', err);
+            res.status(500).json({ error: 'Failed to fetch games' });
+            return;
+        }
+        res.json(result);
+    });
+});
+
+      
 // Start the server
 app.listen(8801, () => {
     console.log(`Listening...`);
