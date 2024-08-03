@@ -11,6 +11,7 @@ function GameCard({ game }) {
     navigate(`/gameDetails/${game.AppId}`);
   };
 
+
   return (
     <Card className="game-card">
       <Card.Img className="game-image" variant="top" src={game.Image} alt={game.Name} />

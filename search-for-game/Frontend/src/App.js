@@ -9,6 +9,7 @@ import Favorites from './Pages/Favorites/Favorites'
 import Search from './Pages/Search/Search';
 import GameDetails from './Pages/GameDetails/GameDetails';
 import ForgotCredentials from './Pages/ForgotCredentials/ForgotCredentials';
+import TopRatioGames from './Pages/TopRatioGames/TopRatioGames';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/search" element={<Search />} />
             <Route path="/gameDetails/:appId" element={<GameDetails />} />
             <Route path="/forgotCredentials" element={<ForgotCredentials />} />
+            <Route path="/top-ratio" element={<TopRatioGames />} />
           </Routes>
         </header>
       </div>
