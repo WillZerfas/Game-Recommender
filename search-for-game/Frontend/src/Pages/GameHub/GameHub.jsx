@@ -30,18 +30,28 @@ function GameHub() {
 
   return (
     <div className="gamehub-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <Button onClick={goToHome} className="home-button" variant="secondary">
-          Back to Home
-        </Button>
-        <Button onClick={goToFavorites} className="favorite-button" variant="secondary">
-          My Favorites
-        </Button>
-      </div>
+
+      <Row >
+        <Col xs="auto" className="text-left" >
+          <Button onClick={goToHome} className="home-button" variant="secondary">
+            Back to Home
+          </Button>
+        </Col>
+        <Col className="text-center" >
+          <h2>Welcome to the GameHub!</h2>
+          <p>Here you can access all your favorite games.</p>
+        </Col>
+        <Col xs="auto" className="text-right">
+          <Button onClick={goToFavorites} className="favorite-button" variant="secondary">
+            My Favorites
+          </Button>
+        </Col>
+      </Row>
+
       <Row className="justify-content-center">
-        <h2>Welcome to the GameHub!</h2>
-        <Col xs="auto">
-          <Button onClick={goToSearch} className="search-button" variant="primary">
+        <Col xs="auto" className="d-flex align-items-center">
+          <h3>Top Tens</h3>
+          <Button onClick={goToSearch} className="topTen-button" variant="primary" style={{ marginLeft: '10px' }}>
             Search for Games!
           </Button>
         </Col>
@@ -51,7 +61,7 @@ function GameHub() {
           </Button>
         </Col>
       </Row>
-      <h1>Top Tens</h1>
+
       <div className="games-grid">
         {games.map((game) => (
           <GameCard key={game.AppId} game={game} />

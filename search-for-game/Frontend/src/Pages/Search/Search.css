@@ -1,5 +1,6 @@
-.container {
-  margin: 15px;
+.search-container {
+  margin-top: 1.5rem;
+  width: 90%;
 }
 
 .formControl {
@@ -10,9 +11,10 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  min-height: 400px;
 }
 
-.no-games{
+.search-no-games{
   font-size: 1.5rem;
   color: #ffffff;
   margin-top: 10rem;

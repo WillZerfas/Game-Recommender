@@ -1,22 +1,22 @@
 .gamehub-container {
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .home-button {
-    margin-bottom: -30px;
-  }
+  margin-top: 1.5rem;
+  width: 90%;
+}
 
-  .favorite-button {
-    margin-bottom: -30px;
-  }
+.home-button {
+  margin-bottom: -30px;
+}
 
-  .search-button {
-    margin-top: 0px;
-  }
-  
-  .games-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+.favorite-button {
+  margin-bottom: -30px;
+}
+
+.search-button {
+  margin-top: 0px;
+}
+
+.games-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
