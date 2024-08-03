@@ -223,9 +223,15 @@ function Search() {
 
             <Row>
                 <div className="games-grid">
-                    {games.map((game) => (
-                        <GameCard key={game.AppId} game={game} />
-                    ))}
+                    {games.length > 0 ? (
+                        games.map((game) => (
+                            <GameCard key={game.AppId} game={game} />
+                        ))
+                    ) : (
+                        <div className='no-games'>
+                            <p>No games found. Try adjusting searching for something else.</p>
+                        </div>
+                    )}
                 </div>
             </Row>
 

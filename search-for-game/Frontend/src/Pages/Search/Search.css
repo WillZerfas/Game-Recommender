@@ -11,3 +11,10 @@
   flex-wrap: wrap;
   justify-content: center;
 }
+
+.no-games{
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-top: 10rem;
+  margin-bottom: 10rem;
+}
