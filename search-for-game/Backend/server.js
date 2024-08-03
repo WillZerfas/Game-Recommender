@@ -151,11 +151,17 @@ app.get('/games', (req, res) => {
         queryParams.push(`%${category}%`);
     }
 
-    // Filtering by price range
-    if (minPrice !== 0 && maxPrice !== 99999999.99) {
-        countQuery += ' AND Price >= ? AND Price <= ?';
-        gamesQuery += ' AND Price >= ? AND Price <= ?';
-        queryParams.push(minPrice, maxPrice);
+    // Filtering by price
+    if (minPrice !== 0) {
+        countQuery += ' AND Price >= ?';
+        gamesQuery += ' AND Price >= ?';
+        queryParams.push(minPrice);
+    }
+
+    if (maxPrice !== 99999999.99) {
+        countQuery += ' AND Price <= ?';
+        gamesQuery += ' AND Price <= ?';
+        queryParams.push(maxPrice);
     }
 
     if (sortBy) {
