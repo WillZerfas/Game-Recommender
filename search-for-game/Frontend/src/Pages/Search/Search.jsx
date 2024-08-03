@@ -135,7 +135,7 @@ function Search() {
     }
 
     return (
-        <div className='container'>
+        <div className='search-container'>
 
             <Row >
                 <Col xs="auto" className="text-left" >
@@ -147,7 +147,7 @@ function Search() {
                     <h2>Welcome to the GameHub!</h2>
                     <p>Here you can access all your favorite games.</p>
                 </Col>
-                <Col xs="auto" className="text-right" >
+                <Col xs="auto" className="text-right">
                     <Button onClick={goToFavorites} className="favorite-button" variant="secondary">
                         My Favorites
                     </Button>
@@ -228,7 +228,7 @@ function Search() {
                             <GameCard key={game.AppId} game={game} />
                         ))
                     ) : (
-                        <div className='no-games'>
+                        <div className='search-no-games'>
                             <p>No games found. Try adjusting searching for something else.</p>
                         </div>
                     )}

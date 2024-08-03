@@ -1,0 +1,17 @@
+.favorites-container {
+    margin-top: 1.5rem;
+    width: 90%;
+}
+
+.games-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.fav-no-games {
+    font-size: 1.5rem;
+    color: #ffffff;
+    margin-top: 10rem;
+    margin-bottom: 25rem;
+}
