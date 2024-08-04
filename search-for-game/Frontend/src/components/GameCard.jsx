@@ -4,7 +4,7 @@ import { Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './GameCard.css';
 
-function GameCard({ game }) {
+function GameCard({ game, refreshFavorites }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate();
 
@@ -68,6 +68,9 @@ function GameCard({ game }) {
       .then(data => {
         if (data.success) {
           setIsFavorite(false);
+          if (refreshFavorites) {
+            refreshFavorites(); // Refresh the list for favorites page
+          }
         }
       })
       .catch(error => {

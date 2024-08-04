@@ -1,6 +1,6 @@
 import './Favorites.css';
 import { useNavigate } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Button } from "react-bootstrap";
 import GameCard from '../../components/GameCard';
 
@@ -18,20 +18,23 @@ function Favorites() {
         navigate('/gamehub'); // Navigate to Home page
     };
 
-    useEffect(() => {
+    const getFavorites = useCallback(() => {
         const username = sessionStorage.getItem('username');
         if (username) {
-          fetch(`http://localhost:8801/favorites-by-username?username=${username}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log(games)
-                setGames(data)
-            })
-            .catch(error => console.error('Error fetching favorite games:', error))
+            fetch(`http://localhost:8801/favorites-by-username?username=${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    setGames(data);
+                })
+                .catch(error => console.error('Error fetching favorite games:', error));
         } else {
-            alert('Couldn\'t find your username, try logging in again.')
+            alert('Couldn\'t find your username, try logging in again.');
         }
-      }, []);
+    }, []);
+
+    useEffect(() => {
+        getFavorites();
+    }, [getFavorites]);
 
     return (
         <div className='favorites-container'>
@@ -65,7 +68,7 @@ function Favorites() {
                 <div className="games-grid">
                     {games.length > 0 ? (
                         games.map((game) => (
-                            <GameCard key={game.AppId} game={game} />
+                            <GameCard key={game.AppId} game={game} refreshFavorites={getFavorites}/>
                         ))
                     ) : (
                         <div className='fav-no-games'>
