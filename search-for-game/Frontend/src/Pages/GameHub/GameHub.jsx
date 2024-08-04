@@ -10,11 +10,11 @@ function GameHub() {
 
   // navigations
   const goToHome = () => {
-    sessionStorage.removeItem('username')
-    navigate('/')
-  }
-  const goToFavorites = () => navigate('/favorites')
-  const goToSearch = () => navigate('/search')
+    sessionStorage.removeItem('username');
+    navigate('/');
+  };
+  const goToFavorites = () => navigate('/favorites');
+  const goToSearch = () => navigate('/search');
 
   useEffect(() => {
     // Fetch the 10 most popular games
@@ -23,6 +23,10 @@ function GameHub() {
       .then((data) => setGames(data))
       .catch((error) => console.error('Error fetching games:', error));
   }, []);
+
+  const goToTopRatioGames = () => {
+    navigate('/top-ratio');
+  };
 
   return (
     <div className="gamehub-container">
@@ -51,6 +55,11 @@ function GameHub() {
             Search for Games!
           </Button>
         </Col>
+        <Col xs="auto">
+          <Button onClick={goToTopRatioGames} className="top-ratio-button" variant="primary">
+            Show Highest Like-to-Dislike Ratio Games
+          </Button>
+        </Col>
       </Row>
 
       <div className="games-grid">
@@ -59,7 +68,7 @@ function GameHub() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export default GameHub;
