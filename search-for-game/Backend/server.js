@@ -418,7 +418,7 @@ app.get('/favorites-by-username', (req, res) => {
         return res.status(400).json({ error: 'Username is required' });
     }
     const query = `
-        SELECT g.AppID, g.Name, g.Price, g.Image
+        SELECT g.AppId, g.Name, g.Price, g.Image
         FROM user u
         JOIN favorite f ON u.UID = f.UID
         JOIN game g ON f.AppID = g.AppID
@@ -442,7 +442,7 @@ app.get('/total-favorites', (req, res) => {
         return res.status(400).json({ error: 'Username is required' });
     }
     const query = `
-        SELECT COUNT(f.AppID) AS total_favorites
+        SELECT COUNT(f.AppId) AS total_favorites
         FROM user u
         JOIN favorite f ON u.UID = f.UID
         WHERE u.Username = ?
@@ -465,7 +465,7 @@ app.get('/game-favorite-count', (req, res) => {
         return res.status(400).json({ error: 'AppID is required' });
     }
     const query = `
-        SELECT g.AppID, g.Name, COUNT(f.UID) AS TotalFavorites 
+        SELECT g.AppId, g.Name, COUNT(f.UID) AS TotalFavorites 
         FROM Game g 
         JOIN Favorite f ON g.AppID = f.AppID 
         WHERE g.AppID = ? 
@@ -492,7 +492,7 @@ app.get('/total-cost-favorites', (req, res) => {
         SELECT SUM(g.Price) AS TotalCost
         FROM user u
         JOIN favorite f ON u.UID = f.UID
-        JOIN game g ON f.AppID = g.AppID
+        JOIN game g ON f.AppId = g.AppId
         WHERE u.Username = ?;
     `;
     db.query(query, [username], (err, results) => {
