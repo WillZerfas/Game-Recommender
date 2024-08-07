@@ -1,17 +1,36 @@
 .game-details-container {
-    margin-top: 20px;
-  }
-  
-  .game-image {
-    width: 100%;
-    height: auto;
-  }
-  
-  .developer-link {
-    color: #007bff;
-    text-decoration: none;
-  }
-  
-  .developer-link:hover {
-    text-decoration: underline;
-  }
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.game-image {
+  width: 100%;
+  height: auto;
+}
+
+.developer-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.developer-link:hover {
+  text-decoration: underline;
+}
+
+.game-details-name {
+  margin-right: 20px;
+}
+
+.platform-buttons {
+  margin-right: 20px;
+  font-size: large;
+}
+
+.platform-descriptions {
+  margin-right: 20px;
+  font-size: large;
+}
+
+.game-description {
+  font-size: 0.8em;
+}

@@ -1,11 +1,13 @@
 // src/components/GameCard.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './GameCard.css';
 
 function GameCard({ game, refreshFavorites }) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteCount, setFavoriteCount] = useState(0);
+  const [hover, setHover] = useState(false);
   const navigate = useNavigate();
 
   const handleExpand = () => {
@@ -29,6 +31,21 @@ function GameCard({ game, refreshFavorites }) {
     }
   }, [game.AppId]);
 
+  const getFavoriteCount = useCallback(() => {
+    fetch(`http://localhost:8801/game-favorite-count?appid=${game.AppId}`)
+      .then(response => response.json())
+      .then(data => {
+        setFavoriteCount(data.TotalFavorites || 0);
+      })
+      .catch(error => {
+        console.error('Error fetching favorite count:', error);
+      });
+  }, [game.AppId]);
+
+  useEffect(() => {
+    getFavoriteCount();
+  }, [getFavoriteCount]);
+
   const handleAddToFavorites = () => {
     const username = sessionStorage.getItem('username');
     if (!username) {
@@ -45,6 +62,7 @@ function GameCard({ game, refreshFavorites }) {
       .then(data => {
         if (data.success) {
           setIsFavorite(true);
+          getFavoriteCount();
         }
       })
       .catch(error => {
@@ -68,6 +86,7 @@ function GameCard({ game, refreshFavorites }) {
       .then(data => {
         if (data.success) {
           setIsFavorite(false);
+          getFavoriteCount();
           if (refreshFavorites) {
             refreshFavorites(); // Refresh the list for favorites page
           }
@@ -86,13 +105,18 @@ function GameCard({ game, refreshFavorites }) {
         <Card.Text className="game-price">
           Price: ${game.Price}
         </Card.Text>
+        <Card.Text className='game-favorite-count'>
+          Favorited by: {favoriteCount} users
+        </Card.Text>
         <Button variant="primary" onClick={handleExpand}>Expand</Button>
         <Button
-          variant={isFavorite ? "danger" : "secondary"}
+          variant={isFavorite ? "warning" : "secondary"}
           onClick={isFavorite ? handleRemoveFromFavorites : handleAddToFavorites}
-          style={{ margin: '5px' }}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          style={{ margin: '10px' }}
         >
-          {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+          {isFavorite ? '❤️' : (hover ? '💖' : '🤍')}
         </Button>
       </Card.Body>
     </Card>
