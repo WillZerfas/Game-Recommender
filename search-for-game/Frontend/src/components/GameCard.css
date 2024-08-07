@@ -11,11 +11,19 @@
   
   .game-title {
     font-size: 0.9em;
-    margin: 5px;
+    margin: 0.5rem 0;
   }
   
   .game-price {
     font-size: 1em;
+    margin: 0.2rem 0;
+    color: #c82333;
+  }
+  
+  .game-favorite-count {
+    font-size: 0.6em;
+    margin: 0.3rem 0;
     color: #555;
   }
+  
   

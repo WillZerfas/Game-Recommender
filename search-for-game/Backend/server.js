@@ -476,6 +476,9 @@ app.get('/game-favorite-count', (req, res) => {
             console.error('Error fetching favorite count for the game:', err);
             return res.status(500).json({ error: 'Server error' });
         }
+        if (results.length === 0) {
+            return res.status(200).json({ TotalFavorites: 0 });
+        }
         return res.status(200).json(results[0]);
     });
 });

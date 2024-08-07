@@ -7,6 +7,7 @@ import GameCard from '../../components/GameCard';
 function Favorites() {
 
     const [games, setGames] = useState([]);
+    const [totalCost, setTotalCost] = useState(0)
     const navigate = useNavigate()
 
     const goToHome = () => {
@@ -18,6 +19,15 @@ function Favorites() {
         navigate('/gamehub'); // Navigate to Home page
     };
 
+    const fetchTotalCost = (username) => {
+        fetch(`http://localhost:8801/total-cost-favorites?username=${username}`)
+            .then(response => response.json())
+            .then(data => {
+                setTotalCost(data.TotalCost || 0);
+            })
+            .catch(error => console.error('Error fetching total cost:', error));
+    };    
+
     const getFavorites = useCallback(() => {
         const username = sessionStorage.getItem('username');
         if (username) {
@@ -25,6 +35,7 @@ function Favorites() {
                 .then(response => response.json())
                 .then(data => {
                     setGames(data);
+                    fetchTotalCost(username);
                 })
                 .catch(error => console.error('Error fetching favorite games:', error));
         } else {
@@ -61,6 +72,12 @@ function Favorites() {
                     <Button onClick={goToSearch} className="topTen-button" variant="primary" style={{ marginLeft: '10px' }}>
                         Search for more!
                     </Button>
+                </Col>
+            </Row>
+
+            <Row className="justify-content-center">
+                <Col xs="auto" className="d-flex align-items-center">
+                    <h4 style={{marginTop:'10px'}}>Favorited {games.length} Games, Total Cost: ${totalCost}</h4> {/* Display the total cost */}
                 </Col>
             </Row>
 
