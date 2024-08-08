@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Container, Row, Col } from 'react-bootstrap';
 import './GameDetails.css'; // Optional CSS for styling
 
 function GameDetails() {
   const { appId } = useParams();
+  const navigate = useNavigate();
   const [gameDetails, setGameDetails] = useState(null);
   const [developers, setDevelopers] = useState([]);
   const [platforms, setPlatforms] = useState([]);
@@ -26,12 +27,21 @@ function GameDetails() {
     // Fetch platforms for the game by AppId
     fetch(`http://localhost:8801/games/platforms/${appId}`)
       .then((response) => response.json())
-      .then((data) => setPlatforms(data))
+      .then((data) => setPlatforms(Array.isArray(data) ? data : [])) // Ensure platforms is always an array
       .catch((error) => console.error('Error fetching platforms:', error));
   }, [appId]);
 
   const handlePlatformClick = (platform) => {
     setSelectedPlatform(platform);
+  };
+
+  const handleDeveloperClick = (website) => {
+    console.log('Developer website:', website); // Debugging statement
+    if (website) {
+      window.open(website, '_blank', 'noopener,noreferrer');
+    } else {
+      navigate('/developer-unavailable'); // Navigate to the new screen when the website is null
+    }
   };
 
   if (!gameDetails) {
@@ -57,14 +67,13 @@ function GameDetails() {
             <strong>Developers: </strong>
             {developers.map((developer, index) => (
               <span key={developer.developer}>
-                <a
-                  href={developer.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <span
+                  onClick={() => handleDeveloperClick(developer.website)}
                   className="developer-link"
+                  style={{ cursor: 'pointer', textDecoration: 'underline', color: '#007bff' }}
                 >
                   {developer.developer}
-                </a>
+                </span>
                 {index < developers.length - 1 && ', '}
               </span>
             ))}
@@ -87,15 +96,19 @@ function GameDetails() {
           <p>
             <span className="platform-buttons">
               <strong>Platforms:</strong>
-              {platforms.map((platform) => (
-                <Button
-                  key={platform.PlatformID}
-                  variant="link"
-                  onClick={() => handlePlatformClick(platform)}
-                >
-                  {platform.Platform}
-                </Button>
-              ))}
+              {Array.isArray(platforms) && platforms.length > 0 ? (
+                platforms.map((platform) => (
+                  <Button
+                    key={platform.PlatformID}
+                    variant="link"
+                    onClick={() => handlePlatformClick(platform)}
+                  >
+                    {platform.Platform}
+                  </Button>
+                ))
+              ) : (
+                <span>No platforms available</span>
+              )}
             </span>
             {selectedPlatform && (
               <span className='platform-descriptions'>

@@ -10,6 +10,7 @@ import Search from './Pages/Search/Search';
 import GameDetails from './Pages/GameDetails/GameDetails';
 import ForgotCredentials from './Pages/ForgotCredentials/ForgotCredentials';
 import TopRatioGames from './Pages/TopRatioGames/TopRatioGames';
+import DeveloperUnavailable from './Pages/DeveloperUnavailable/DeveloperUnavailable';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
             <Route path="/gameDetails/:appId" element={<GameDetails />} />
             <Route path="/forgotCredentials" element={<ForgotCredentials />} />
             <Route path="/top-ratio" element={<TopRatioGames />} />
+            <Route path="/developer-unavailable" element={<DeveloperUnavailable />} />
           </Routes>
         </header>
       </div>
