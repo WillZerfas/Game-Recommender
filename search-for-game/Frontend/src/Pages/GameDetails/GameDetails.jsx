@@ -36,12 +36,11 @@ function GameDetails() {
   };
 
   const handleDeveloperClick = (website) => {
-    console.log('Developer website:', website); // Debugging statement
-    if (website) {
-      window.open(website, '_blank', 'noopener,noreferrer');
+    if (website === null || website === 'null' || website === '') {
+      navigate('/developer-unavailable'); // Navigate to the new screen when the website is null, 'null', or an empty string
     } else {
-      navigate('/developer-unavailable'); // Navigate to the new screen when the website is null
-    }
+      window.open(website, '_blank', 'noopener,noreferrer');
+    };
   };
 
   if (!gameDetails) {
@@ -51,7 +50,6 @@ function GameDetails() {
   return (
     <Container className="game-details-container">
       <Row style={{ margin: '15px 0px' }}>
-        {/* Display game image if available */}
         {gameDetails.Image && <img src={gameDetails.Image} alt={gameDetails.Name} className="game-image" />}
       </Row>
 

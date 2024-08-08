@@ -22,6 +22,7 @@ function Home() {
 
   return (
     <div className="home-container">
+      <div className="title">Game Recommender</div>
       <h1>Welcome, We hope you find a game you enjoy!</h1>
       <div className="price-info">
         <p>We can show you a vast selection of games where the average price is only: ${avgPrice.toFixed(2)}</p>
